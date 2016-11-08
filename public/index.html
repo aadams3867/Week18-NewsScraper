@@ -22,7 +22,28 @@
       width:30%;
       float:right;
     }
-    h1, h2, a {
+    #headlineTitle{
+      width:60%;
+      display:inline-block;
+      overflow: auto;
+      background: url("/img/popcornBorder.png");
+    }
+    #commentTitle{
+      width:30%;
+      float:right;
+      background: url("/img/popcornBorder.png");
+    }
+    h1, h2, h3 {
+      text-align: center;
+    }
+    .button {
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 5px;
+    }
+    #scraper {
+      width: 50%;
+      margin: 4px auto;
       text-align: center;
     }
     textarea, input{
@@ -42,12 +63,15 @@
 </head>
 <body>
   <div id="wrapper">
-    <h1>News Corn Hub</h1>
+    <h1><img src="/img/ascending.jpg" alt="Pic of popcorn in boxes"> News Corn Hub <img src="/img/descending.jpg" alt="Pic of popcorn in boxes"></h1>
     <h2><i>All the news that's fit to pop<br>
     from reddit.com, the front page of the Internet</i></h2>
-<!--     <button id="goScrape">Pop up some headlines!</button> -->
+    <div id="scraper"><button id="goScrape" class="button">Pop up some headlines!</button></div>
 <!--     <input type="button" value="Pop up some headlines!" onclick="window.location.assign('http://localhost:3000/scrape')"> -->
-    <div><a href="/scrape">Pop up some headlines!</a></div>
+<!--     <div><a href="/scrape"><img src="/img/popUpHeadlines.jpg" alt="Pic of popcorn popping">Pop up some headlines!</a></div> -->
+    <div id="headlineTitle"><br><h3>Hot, fresh, buttery Headlines</h3></div>
+    <div id="commentTitle"><br><h3>Comment Box</h3></div>
+
     <div id="articles"></div>
     <div id="notes"></div>
   </div>

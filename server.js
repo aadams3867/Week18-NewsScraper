@@ -78,22 +78,26 @@ app.get('/scrape', function(req, res) {
 		// This effectively passes the result object to the entry (and the title and link)
 		var entry = new Article (result);
 
-		// Now, save that entry to the db
-		entry.save(function(err, doc) {
-		  // Log any errors
-		  if (err) {
-		    console.log(err);
-		  } 
-		  // or log the doc
-		  else {
-		    console.log(doc);
-		  }
-		});
+  	try {
+    	// Now, save that entry to the db
+  		entry.save(function(err, doc) {
+  		});
+    } catch (err) {
+        // Log any errors
+        if (err) {
+          console.log(err);
+        } 
+        // or log the doc
+        else {
+          console.log(doc);
+        }
+    }
 
     });
   });
-  // Tell the browser that we finished scraping the text.
-  res.send("Scrape Complete");
+  // Load the index page
+  console.log("Scrape complete!");
+  res.redirect('/');
 });
 
 
