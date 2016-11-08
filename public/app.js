@@ -95,15 +95,15 @@ $(document).on('click', '#deletenote', function(){
 
   // run a POST request to empty the note
   $.ajax({
-    method: "POST",
-    url: "/articles/" + thisId,
-    data: {
+    method: "GET",
+    url: "/delete/" + thisId,
+/*    data: {
       body: $('#bodyinput').val() // value taken from note textarea, which was emptied
-    }
+    }*/
   })
     // with that done
     .done(function( data ) {
       // log the response
-      console.log(data);
+      console.log("Data: " + data);
     });
 });

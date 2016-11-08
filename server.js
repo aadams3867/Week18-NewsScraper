@@ -172,6 +172,53 @@ app.post('/articles/:id', function(req, res){
 });
 
 
+// Delete One from the DB
+app.get('/delete/:id', function(req, res) {
+  // Find the noteID from the objectID
+  Article.find({'_id': req.params.id}, {'_id': 0, 'note': 1})  // return the value of the 'note' field only
+    .exec(function(err, doc) {
+    // Log any errors
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(doc);
+      console.log(doc[0].note);
+      // Delete the Note from the 'notes' collection
+      Note.remove({ '_id': doc[0].note })
+      .exec(function(err, doc) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Note document successfully deleted!");
+          console.log(req.params.id);
+          // Delete the reference to the Note from the 'articles' collection
+          Article.update( { _id: req.params.id }, { $unset: {note: 1} } );
+        }
+      })
+
+//      res.send(doc);
+    }
+  });
+/*
+  // Remove a note using the objectID
+  db.notes.remove({
+    "_id": mongojs.ObjectID(req.params.id)
+  }, function(err, removed) {
+    // Log any errors from mongojs
+    if (err) {
+      console.log(err);
+      res.send(err);
+    } 
+    // Otherwise, send the mongojs response to the browser.
+    // This will fire off the success function of the ajax request
+    else {
+      console.log(removed);
+      res.send(removed);
+    }
+  });*/
+});
+
+
 // Listen on port 3000
 app.listen(3000, function() {
   console.log('App running on port 3000!');
