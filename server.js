@@ -7,6 +7,9 @@ var app = express();
 var bodyParser = require('body-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose');
+// Deprecated Promise library fix
+var Promise = require('bluebird');
+mongoose.Promise=Promise;
 // Notice: Our scraping tools are prepared, too
 var request = require('request'); 
 var cheerio = require('cheerio');
@@ -51,53 +54,58 @@ app.get('/', function(req, res) {
 
 // A GET request to scrape the reddit website.
 app.get('/scrape', function(req, res) {
-	// First, we grab the body of the html with request
+
+  console.log("Heating up the corn popper... Please be patient!");
+
+  // First, we grab the body of the html with request
   request('https://www.reddit.com', function(error, response, html) {
   	// Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(html);
+
     // Now, we grab every title within an article tag, and do the following:
     $('p.title').each(function(i, element) {
 
-		// Save an empty result object
-		var result = {};
+  		// Save an empty result object
+  		var result = {};
 
-		// Add the text and href of every link, 
-		// and save them as properties of the result obj
-		result.title = $(this).children('a').text();
-		result.link = $(this).children('a').attr('href');
+  		// Add the text and href of every link, 
+  		// and save them as properties of the result obj
+  		result.title = $(this).children('a').text();
+  		result.link = $(this).children('a').attr('href');
 
-    // If the href is a reddit link (starts with "/"),
-    // add "https://www.reddit.com" to the front for a complete link
-    if (result.link.substring(0, 1) == "/") {
-      result.link = "https://www.reddit.com" + result.link;
-    }
+      // If the href is a reddit link (starts with "/"),
+      // add "https://www.reddit.com" to the front for a complete link
+      if (result.link.substring(0, 1) == "/") {
+        result.link = "https://www.reddit.com" + result.link;
+      }
 
 
-		// Using our Article model, create a new entry.
-		// Notice the (result):
-		// This effectively passes the result object to the entry (and the title and link)
-		var entry = new Article (result);
+  		// Using our Article model, create a new entry.
+  		// Notice the (result):
+  		// This effectively passes the result object to the entry (and the title and link)
+  		var entry = new Article (result);
 
-  	try {
-    	// Now, save that entry to the db
-  		entry.save(function(err, doc) {
-  		});
-    } catch (err) {
-        // Log any errors
-        if (err) {
-          console.log(err);
-        } 
-        // or log the doc
-        else {
-          console.log(doc);
-        }
-    }
-
+    	try {
+      	// Now, save that entry to the db
+    		entry.save(function(err, doc) {
+    		});
+      } catch (err) {
+          // Log any errors
+          if (err) {
+            console.log(err);
+          } 
+          // or log the doc
+          else {
+            console.log(doc);
+          }
+      }      
     });
+
+    // Load the index page
+    console.log("Scrape complete!");
+    res.redirect('/');
+
   });
-  // Load the index page
-  console.log("Scrape complete!");
-  res.redirect('/');
 });
 
 
