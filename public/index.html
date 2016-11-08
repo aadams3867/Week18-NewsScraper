@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Document</title>
+  <title>News Corn Hub</title>
   <style>
     body{
-      /*background-color: #DECADE*/
       background-color: #F2F6D0
     }
     #wrapper{
@@ -22,6 +21,9 @@
     #notes{
       width:30%;
       float:right;
+    }
+    h1, h2, a {
+      text-align: center;
     }
     textarea, input{
       display:block;
@@ -40,8 +42,12 @@
 </head>
 <body>
   <div id="wrapper">
-    <h1>News Scraper of https://www.reddit.com</h1>
-    <h2><i>The front page of the Internet</i></h2>
+    <h1>News Corn Hub</h1>
+    <h2><i>All the news that's fit to pop<br>
+    from reddit.com, the front page of the Internet</i></h2>
+<!--     <button id="goScrape">Pop up some headlines!</button> -->
+<!--     <input type="button" value="Pop up some headlines!" onclick="window.location.assign('http://localhost:3000/scrape')"> -->
+    <div><a href="/scrape">Pop up some headlines!</a></div>
     <div id="articles"></div>
     <div id="notes"></div>
   </div>
