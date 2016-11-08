@@ -79,8 +79,6 @@ $(document).on('click', '#savenote', function(){
     .done(function( data ) {
       // log the response
       console.log(data);
-      // empty the notes section
-      //$('#notes').empty();
     });
 
   // Also, remove the values entered in the input for note entry
@@ -107,7 +105,5 @@ $(document).on('click', '#deletenote', function(){
     .done(function( data ) {
       // log the response
       console.log(data);
-      // empty the notes section
-      //$('#notes').empty();
     });
 });
