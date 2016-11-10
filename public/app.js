@@ -12,6 +12,14 @@ function getNotes(data){
 }
 
 
+// Make all links open a new tab
+$(document).on('click', 'a', function(e){
+  e.preventDefault();
+  var url = $(this).attr('href');
+  window.open(url, '_blank');
+});
+
+
 // When you click the goScrape button,
 $(document).on('click', '#goScrape', function(){
   // run a GET request to scrape the headlines
@@ -25,7 +33,7 @@ $(document).on('click', '#goScrape', function(){
         // for each one
         for (var i = 0; i<data.length; i++){
           // display the apropos information on the page
-          $('#articles').append('<p data-id="' + data[i]._id + '">'+ data[i].title + '<br />'+ data[i].link + '</p>');
+          $('#articles').append('<p data-id="' + data[i]._id + '">'+ data[i].title + '<br />'+ (data[i].link).link(data[i].link) + '</p>');
         }
       });
       console.log("Scrape complete!");

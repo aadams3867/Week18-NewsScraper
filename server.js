@@ -79,7 +79,6 @@ app.get('/scrape', function(req, res) {
         result.link = "https://www.reddit.com" + result.link;
       }
 
-
   		// Using our Article model, create a new article entry.
   		// Notice the (result):
   		// This effectively passes the result object to the entry (and the title and link)
