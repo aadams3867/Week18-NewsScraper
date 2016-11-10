@@ -25,7 +25,7 @@ app.use(express.static('public'));
 
 
 // Database configuration with Mongoose
-mongoose.connect('mongodb://localhost/news_scraper');
+mongoose.connect('mongodb://heroku_qg3lvc9n:nii43a2balvcetebnc0b1hq5p5@ds021650.mlab.com:21650/heroku_qg3lvc9n');
 var db = mongoose.connection;
 
 // Show any mongoose errors
@@ -73,14 +73,14 @@ app.get('/scrape', function(req, res) {
   		result.title = $(this).children('a').text();
   		result.link = $(this).children('a').attr('href');
 
-      // If the href is a reddit link (starts with "/"),
+      // If the href links back to reddit (starts with "/"),
       // add "https://www.reddit.com" to the front for a complete link
       if (result.link.substring(0, 1) == "/") {
         result.link = "https://www.reddit.com" + result.link;
       }
 
 
-  		// Using our Article model, create a new entry.
+  		// Using our Article model, create a new article entry.
   		// Notice the (result):
   		// This effectively passes the result object to the entry (and the title and link)
   		var entry = new Article (result);
@@ -88,21 +88,17 @@ app.get('/scrape', function(req, res) {
     	try {
       	// Now, save that entry to the db
     		entry.save(function(err, doc) {
-    		});
+          console.log(doc);
+        });
       } catch (err) {
-          // Log any errors
-          if (err) {
-            console.log(err);
-          } 
-          // or log the doc
-          else {
-            console.log(doc);
-          }
+        // Log any errors
+        if (err) {
+          console.log(err);
+        }
       }      
     });
 
     // Load the index page
-    console.log("Scrape complete!");
     res.redirect('/');
 
   });
@@ -115,34 +111,46 @@ app.get('/articles', function(req, res){
     // Log any errors
     if (err) {
       console.log(err);
-    } 
-    // or send the doc to the browser
-    else {
+    } else {
       res.json(doc);
     }
   });
 
 });
+
 
 // This will grab an article by its ObjectId
 app.get('/articles/:id', function(req, res){
   Article.findOne({ '_id': req.params.id })
-  	.populate('note')
   	.exec(function(err, doc) {
     // Log any errors
     if (err) {
       console.log(err);
-    } 
-    // or send the doc to the browser
-    else {
+    } else {
       res.json(doc);
     }
   });
 
 });
 
-// Replace the existing note of an article with a new one
-// or if no note exists for an article, make the posted note its new note.
+
+// Retrieve all notes from the DB, linked to the article
+app.get('/allthenotes/:id', function(req, res) {
+  // Find all notes in the notes collection
+  Note.find({'articleId': req.params.id})
+    .exec(function(err, found) {
+    // Log any errors
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(found);
+    }
+  });
+});
+
+
+
+// Make a new note, linked to the article
 app.post('/articles/:id', function(req, res){
 
   var newNote = new Note(req.body);
@@ -151,71 +159,46 @@ app.post('/articles/:id', function(req, res){
     // Log any errors
     if (err) {
       console.log(err);
-    } 
-    // otherwise
-    else {
-      // Find our article and overwrite the note id into the Article's notes array
-      Article.findOneAndUpdate({'_id': req.params.id}, {'note': doc._id})
-      	.exec(function(err, doc) {
-        // Log any errors
-        if (err) {
-          console.log(err);
-        } 
-        // or send the doc to the browser
-        else {
-          res.send(doc);
-        }
-      });
+    } else {
+      console.log("New Note document successfully saved!");
+      console.log("Article ID: " + doc.articleId + "   Note: " + doc.body);
+      res.send(doc);
     }
   });
 
 });
 
 
-// Delete One from the DB
+// Delete one note from the DB
 app.get('/delete/:id', function(req, res) {
-  // Find the noteID from the objectID
-  Article.find({'_id': req.params.id}, {'_id': 0, 'note': 1})  // return the value of the 'note' field only
-    .exec(function(err, doc) {
-    // Log any errors
-    if (err) {
-      console.log(err);
-    } else {
-      console.log(doc);
-      console.log(doc[0].note);
-      // Delete the Note from the 'notes' collection
-      Note.remove({ '_id': doc[0].note })
-      .exec(function(err, doc) {
-        if (err) {
-          console.log(err);
-        } else {
-          console.log("Note document successfully deleted!");
-          console.log(req.params.id);
-          // Delete the reference to the Note from the 'articles' collection
-          Article.update( { _id: req.params.id }, { $unset: {note: 1} } );
-        }
-      })
 
-//      res.send(doc);
-    }
-  });
-/*
-  // Remove a note using the objectID
-  db.notes.remove({
-    "_id": mongojs.ObjectID(req.params.id)
-  }, function(err, removed) {
-    // Log any errors from mongojs
-    if (err) {
-      console.log(err);
-      res.send(err);
-    } 
-    // Otherwise, send the mongojs response to the browser.
-    // This will fire off the success function of the ajax request
-    else {
-      console.log(removed);
-      res.send(removed);
-    }
-  });*/
+  // Remove the one note using the note's _id
+  Note.remove({'_id': req.params.id})
+    .exec(function(err, doc) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("One Note document successfully deleted!");
+        console.log("Note ID to be deleted: " + req.params.id);
+        res.send(doc);
+      }
+    })
+});
+
+
+// Delete all notes associated with a particular article from the DB
+app.get('/deleteall/:id', function(req, res) {
+  // Remove all the notes using the article's id
+  Note.remove({'articleId': req.params.id})
+    .exec(function(err, doc) {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log("All the Note documents successfully deleted!");
+        console.log("Article ID: " + req.params.id);
+        res.send(doc);
+      }
+    })
 });
 
 

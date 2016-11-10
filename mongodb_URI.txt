@@ -1,0 +1,5 @@
+// Original config
+mongoose.connect('mongodb://localhost/news_scraper');
+
+// Heroku config
+mongoose.connect('mongodb://heroku_qg3lvc9n:nii43a2balvcetebnc0b1hq5p5@ds021650.mlab.com:21650/heroku_qg3lvc9n');
